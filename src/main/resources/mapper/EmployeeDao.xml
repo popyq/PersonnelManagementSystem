@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.potato.dao.EmployeeDao">
+
+    <resultMap type="com.potato.dto.EmployeeDTO" id="UserInfoMap">
+        <id property="emId" column="em_id" jdbcType="INTEGER"/>
+<!--        <result property="password" column="password" jdbcType="VARCHAR"/>-->
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="loginName" column="login_name" jdbcType="VARCHAR"/>
+        <result property="depId" column="dep_id" jdbcType="INTEGER"/>
+        <result property="positionId" column="position_id" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <association property="department" column="dep_id" select="com.potato.dao.DepartmentDao.queryById"/>
+        <association property="position" column="position_id" select="com.potato.dao.PositionDao.queryById"/>
+    </resultMap>
+
+    <!--  根据账号和密码查询员工信息 -->
+    <select id="queryEmInfoByUserNameAndPassword" resultMap="UserInfoMap">
+        select em_id,
+               password,
+               name,
+               login_name,
+               dep_id,
+               position_id,
+               status
+        FROM   employee
+        where  login_name = #{userName} AND password = #{password}
+    </select>
+
+    <!-- 分页查询员工信息   -->
+    <select id="queryPageList" resultMap="UserInfoMap">
+        select em_id,
+               password,
+               name,
+               login_name,
+               dep_id,
+               position_id,
+               status
+        FROM   employee  ${ew.customSqlSegment}
+    </select>
+
+    <!--  修改status状态  -->
+    <update id="updateFailureStatusById">
+        update employee
+        set status = 0
+        where em_id = #{emId}
+    </update>
+
+    <!--  修改status状态  -->
+    <update id="updateSuccessStatusById">
+        update employee
+        set status = 1
+        where em_id = #{emId}
+    </update>
+
+</mapper>
+
